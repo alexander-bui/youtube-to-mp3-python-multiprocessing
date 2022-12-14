@@ -2,7 +2,7 @@
 # importing packages
 from pytube import YouTube, Playlist
 import os
-from multiprocessing import Pool, active_children
+from multiprocessing import Pool
 from functools import partial
 
 PROCESS_TYPE = "URLS" # CHOOSE PLAYLIST or URLS
