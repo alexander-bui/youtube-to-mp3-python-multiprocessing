@@ -1,11 +1,11 @@
-
 # importing packages
 from pytube import YouTube, Playlist
+from moviepy.editor import AudioFileClip
 import os
 from multiprocessing import Pool
 from functools import partial
 
-PROCESS_TYPE = "URLS" # CHOOSE PLAYLIST or URLS
+PROCESS_TYPE = "PLAYLIST" # CHOOSE PLAYLIST or URLS
 NUMBER_OF_WORKERS = 4 # Declare num of core to use
 
 import logging
@@ -19,9 +19,9 @@ youtube_urls = [
     "https://youtu.be/Zx7K5wUYRSI",
 ] # add more if needed
 
-p = Playlist('https://www.youtube.com/playlist?list=PLHTo__bpnlYUBJkury-RiqSizoXXmn082')
+p = Playlist('https://www.youtube.com/playlist?list=PLR2DXFclGc0ahI8jEB-nHDjo8zAtqvpc4')
 
-destination = "C:/Music/"
+destination = "C:/Music"
 
 def download_mp3(link,download_type):
     try:
@@ -33,14 +33,18 @@ def download_mp3(link,download_type):
             yt = YouTube(str(link))
             logging.info(f'Downloading {yt.title}.')
             audio = yt.streams.get_audio_only()
+            print(f"{audio=}")
             
         # download the file
         out_file = audio.download(output_path=destination) # 128kbps
             
-        # save the file
+        # converts mp4 -> mp3 then saves the file. deletes mp4 file
         base, ext = os.path.splitext(out_file)
-        new_file = f'{base}.mp3'
-        os.rename(out_file, new_file)
+        ext2 = '.mp3'
+        mp4_video = AudioFileClip(base+ext)
+        mp4_video.write_audiofile(base+ext2)
+        mp4_video.close()
+        os.remove(base+ext)
             
         # result of success
         if download_type == 1: # playlist
