@@ -33,7 +33,6 @@ def download_mp3(link,download_type):
             yt = YouTube(str(link))
             logging.info(f'Downloading {yt.title}.')
             audio = yt.streams.get_audio_only()
-            print(f"{audio=}")
             
         # download the file
         out_file = audio.download(output_path=destination) # 128kbps
