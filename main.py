@@ -19,9 +19,11 @@ youtube_urls = [
     "https://youtu.be/Zx7K5wUYRSI",
 ] # add more if needed
 
-p = Playlist('https://www.youtube.com/playlist?list=PLR2DXFclGc0ahI8jEB-nHDjo8zAtqvpc4')
+p = Playlist('https://www.youtube.com/playlist?list=PLe3UPCHpSqZli70WbgsAeSB5fdZ6VTWYQ')
 
 destination = "C:/Music"
+
+prefix = "Beast In Black - " # Set to "" for no prefix
 
 def download_mp3(link,download_type):
     try:
@@ -41,7 +43,7 @@ def download_mp3(link,download_type):
         base, ext = os.path.splitext(out_file)
         ext2 = '.mp3'
         mp4_video = AudioFileClip(base+ext)
-        mp4_video.write_audiofile(base+ext2)
+        mp4_video.write_audiofile(f"{destination}\\{prefix}{base[len(destination)+1:]}{ext2}", bitrate="128kbps")
         mp4_video.close()
         os.remove(base+ext)
             

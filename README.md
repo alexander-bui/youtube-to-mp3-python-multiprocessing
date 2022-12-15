@@ -8,7 +8,7 @@ Need to install Python 3. Recommended latest Python 3.
 ## How to use
 1. (Optional): Create a virtual environment
 2. Run `pip install -r requirements.txt`
-3. Add youtube links to `youtube_urls` and  change destination folder in `destination`
+3. Add youtube links to `youtube_urls`,  change destination folder in `destination`, set `prefix` for additional naming for each title
 4. Adjust `PROCESS_TYPE` and `NUMBER_OF_WORKERS` to preference
 5. Run `python3 main.py` or `python main.py`
 
