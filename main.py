@@ -4,51 +4,59 @@ from moviepy.editor import AudioFileClip
 import os
 from multiprocessing import Pool
 from functools import partial
-
-PROCESS_TYPE = "PLAYLIST" # CHOOSE PLAYLIST or URLS
-NUMBER_OF_WORKERS = 4 # Declare num of core to use
-
 import logging
+
+PROCESS_TYPE = "PLAYLIST"  # CHOOSE PLAYLIST or URLS
+NUMBER_OF_WORKERS = 4  # Declare num of core to use
+
+
 logging.basicConfig(
-    level=logging.INFO, # INFO, ERROR
+    level=logging.INFO,  # INFO, ERROR
     format="%(asctime)s [%(levelname)s] %(message)s"
 )
 
-youtube_urls = [
-    "https://youtu.be/gVixaG76Ldg",
-    "https://youtu.be/Zx7K5wUYRSI",
-] # add more if needed
 
-p = Playlist('https://www.youtube.com/playlist?list=PLvLpqR9VfgDD6Amai_nyv76crCs_68bLC')
+class Settings:
+    youtube_urls = [
+        "https://www.youtube.com/watch?v=ehThO11BJog",
+        # "https://youtu.be/Zx7K5wUYRSI",
+    ]  # add more if needed
 
-destination = "C:/Music"
+    p = Playlist(
+        'https://www.youtube.com/playlist?list=PL6ogdCG3tAWh4AShzQ-ThtBrooCutrNpM'
+    )
 
-prefix = "The Glitch Mob - " # Set to "" for no prefix
+    destination = "C:/Music"
 
-def download_mp3(link,download_type):
+    prefix = "Slipknot - "  # Set to "" for no prefix
+
+
+def download_mp3(link, download_type, settings):
     try:
         # extract audio
-        if download_type == 1: # playlist
+        if download_type == 1:  # playlist
             logging.info(f'Downloading {link.title}.')
             audio = link.streams.get_audio_only()
         else:
             yt = YouTube(str(link))
             logging.info(f'Downloading {yt.title}.')
             audio = yt.streams.get_audio_only()
-            
+
         # download the file
-        out_file = audio.download(output_path=destination) # 128kbps
-            
+        out_file = audio.download(output_path=settings.destination)  # 128kbps
+
         # converts mp4 -> mp3 then saves the file. deletes mp4 file
         base, ext = os.path.splitext(out_file)
         ext2 = '.mp3'
         mp4_video = AudioFileClip(base+ext)
-        mp4_video.write_audiofile(f"{destination}\\{prefix}{base[len(destination)+1:]}{ext2}", bitrate="128k")
+        mp4_video.write_audiofile(
+            f"{settings.destination}\\{settings.prefix}{base[len(settings.destination)+1:]}{ext2}",
+            bitrate="128k")
         mp4_video.close()
         os.remove(base+ext)
-            
+
         # result of success
-        if download_type == 1: # playlist
+        if download_type == 1:  # playlist
             logging.info(f'{link.title} has been successfully downloaded.')
         else:
             logging.info(yt.title + " has been successfully downloaded.")
@@ -58,16 +66,21 @@ def download_mp3(link,download_type):
 
 if __name__ == '__main__':
     pool = Pool(processes=NUMBER_OF_WORKERS)
+    settings = Settings()
     try:
         # create all tasks
-        logging.info(f"Downloading videos")
+        logging.info("Downloading videos")
         if PROCESS_TYPE == "PLAYLIST":
-            result = pool.map(partial(download_mp3, download_type=1), [link for link in p.videos])
+            result = pool.map(partial(
+                download_mp3, download_type=1, settings=settings),
+                [link for link in settings.p.videos])
         else:
-            result = pool.map(partial(download_mp3, download_type=0), [link for link in youtube_urls])
-        logging.info(f"Finished downloading videos")
+            result = pool.map(partial(
+                download_mp3, download_type=0, settings=settings),
+                [link for link in settings.youtube_urls])
+        logging.info("Finished downloading videos")
     except KeyboardInterrupt:
         # User interrupt the program with ctrl+c
-        logging.error(f"Exited via KeyboardInterrupt")
+        logging.error("Exited via KeyboardInterrupt")
         pool.terminate()
         pool.join()
